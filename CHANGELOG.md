@@ -1,8 +1,14 @@
 # Changelog
 
-This project follows [semantic versioning](https://semver.org). Until 1.0 the
-exported API may change in a minor release; a change that breaks a caller is
-called out here.
+This module follows [Go's version rules](https://go.dev/ref/mod#versions).
+
+Until `v1.0.0` it is unstable, and the go command treats it that way: any
+release may break a caller, including a patch release. Every break is called
+out here.
+
+From `v1.0.0`, a backwards-incompatible change means a new major version and,
+with it, a new import path — `github.com/jkakar/typesafe-sdk-go/v2`. An
+existing caller keeps building against `v1` until it chooses to move.
 
 ## Unreleased
 
@@ -26,3 +32,6 @@ called out here.
   and `TYPESAFE_DEFAULT_MODEL`.
 - `typesafetest` runs a fake TypeSafe API for testing a program that calls
   this SDK.
+- `Model.ReleaseDate` is the string the API sends. Its format is not settled:
+  the published schema documents `YYYY-MM-DD` and the API returns an RFC 3339
+  timestamp, so treat it as text.

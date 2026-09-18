@@ -62,7 +62,47 @@ Link to the concept a type implements, such as
 <https://docs.typesafe.ai/primitives/noul>, rather than restating it.
 
 **Version the SDK in one place.** `Version` in `version.go` reaches the
-`User-Agent` and `X-TypeSafe-SDK` headers. Bump it in the release commit.
+`User-Agent` and `X-TypeSafe-SDK` headers. See "Releases and the changelog"
+for when it moves.
+
+## Releases and the changelog
+
+This module follows [Go's version rules](https://go.dev/ref/mod#versions), so
+the version number is a promise the go command enforces rather than a label.
+
+**Record the change when you make it, not when you release.** Every change a
+caller can notice gets a line under `## Unreleased` in `CHANGELOG.md`, in the
+same commit as the change, under `### Added`, `### Changed`, `### Fixed`, or
+`### Removed`. A release then moves that heading rather than reconstructing it
+from the log. A change no caller can notice — a refactor, a test, a
+documentation fix — gets no line.
+
+**Write the entry for a caller.** Name the exported identifier they touch and
+what they do differently, not the file you edited.
+
+**Know what counts as breaking**, because from `v1.0.0` it costs an import
+path:
+
+| Change | Breaking? |
+|---|---|
+| Removing or renaming an exported identifier, or changing a signature | Yes |
+| Adding a field to an exported struct | Usually not: `go vet` flags an unkeyed literal of another module's type, so callers key their fields. An unkeyed literal still compiles, so this is a convention, not a guarantee |
+| Adding a method to `Question` or `Answer` | No: both are sealed, so no caller implements them |
+| Adding an `Option`, a sentinel, or a `RetryPolicy` field | No |
+| Adding a concrete answer type | Yes in effect: an exhaustive type switch stops being exhaustive |
+| Changing when an error is returned, or which sentinel it unwraps to | Yes |
+
+**Cutting a release:**
+
+1. Move `## Unreleased` to `## vX.Y.Z` and date it, leaving a fresh
+   `## Unreleased` above.
+2. Set `Version` in `version.go` to the same number.
+3. Run `make check`.
+4. Merge, then tag the merge commit `vX.Y.Z` and push the tag. The go command
+   serves the module from the tag, so the tag is the release.
+
+Until `v1.0.0`, the go command treats every version as unstable and a break
+needs no major bump — but it still needs its line in the changelog.
 
 ## Code style
 
@@ -166,8 +206,9 @@ with its own cache. Do not duplicate checks in workflow YAML.
 - `docs/usage.md` is the task-oriented guide to the whole SDK. Every Go
   snippet in it type-checks against the real API, so keep them compilable
   rather than illustrative.
-- `CHANGELOG.md` records what each release added, changed, or broke. Add the
-  entry in the commit that makes the change, under `## Unreleased`.
+- `CHANGELOG.md` records what each release added, changed, fixed, or removed.
+  See "Releases and the changelog" for what earns an entry and how a release
+  is cut.
 - `examples/` holds runnable programs that call the real API. They are
   documentation the compiler and the linter keep honest, so they are excluded
   from the coverage metric and not from `go build`.
