@@ -19,9 +19,10 @@ this file before changing it.
 
 ## Repository layout
 
-The SDK is one package at the repository root, `typesafe`, the way
-`anthropic-sdk-go` and `openai-go` lay out theirs. A caller writes
-`typesafe.NewClient`, not `sdk.New`.
+The SDK is one package at the repository root, named `typesafe`. A package
+name does not have to match the last element of its import path, and a module
+named for a repository carries a suffix a package name should not. A caller
+writes `typesafe.NewClient`, not `sdk.New` or `typesafesdkgo.New`.
 
 ```
 client.go        Client, options, configuration
@@ -185,7 +186,9 @@ unfinished work.
 ## Git workflow and pull requests
 
 - Never commit directly to `main`.
-- Name branches `jkakar/<short-feature-name>`.
+- Name branches `<your-github-username>/<short-feature-name>`, such as
+  `jkakar/retry-after-ms`. Working from a fork, name them however that fork
+  prefers; the prefix exists to keep branches apart on a shared remote.
 - Keep commits focused. Preserve unrelated user changes.
 - Merge pull requests with GitHub's squash merge.
 - Prefix commit and pull request titles with the area they change, such as

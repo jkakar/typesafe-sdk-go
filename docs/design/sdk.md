@@ -61,8 +61,9 @@ JavaScript infers each answer's type from the question that produced it, so
 ### Package and construction
 
 One package at the repository root, imported as
-`github.com/jkakar/typesafe-sdk-go` and named `typesafe`, matching
-`anthropic-sdk-go` and `openai-go`.
+`github.com/jkakar/typesafe-sdk-go` and named `typesafe`. A package name is
+independent of its import path, so the `-go` a repository name needs to avoid
+colliding with its siblings does not reach the call site.
 
 ```go
 func NewClient(opts ...Option) (*Client, error)
