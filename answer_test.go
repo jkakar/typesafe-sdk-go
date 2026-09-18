@@ -49,6 +49,14 @@ func TestAnswers_Noul(t *testing.T) {
 		assert.Contains(t, err.Error(), `"missing"`)
 	})
 
+	t.Run("reports an answer that is nil", func(t *testing.T) {
+		t.Parallel()
+
+		_, err := typesafe.Answers{"urgent": nil}.Noul("urgent")
+
+		assert.IsError(t, err, typesafe.ErrNoAnswer)
+	})
+
 	t.Run("reports an answer of another type", func(t *testing.T) {
 		t.Parallel()
 

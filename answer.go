@@ -121,8 +121,10 @@ func (a Answers) Score(name string) (ScoreAnswer, error) {
 // answer has another type.
 func readAnswer[T Answer](answers Answers, name, want string) (T, error) {
 	var zero T
+	// A name the response never carried and a name carrying nothing are
+	// the same thing to a caller, and neither is worth a panic.
 	answer, ok := answers[name]
-	if !ok {
+	if !ok || answer == nil {
 		return zero, fmt.Errorf("%w for question %q", ErrNoAnswer, name)
 	}
 	typed, ok := answer.(T)

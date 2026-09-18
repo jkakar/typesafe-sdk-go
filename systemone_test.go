@@ -213,6 +213,27 @@ func TestClient_SystemOne(t *testing.T) {
 		}
 	})
 
+	t.Run("rejects a question that is nil", func(t *testing.T) {
+		t.Parallel()
+		client := newRawServer(t, func(http.ResponseWriter, *http.Request) {
+			assert.True(t, false, "the client must not send a nil question")
+		})
+		// The shape a generator produces when a branch returns nothing.
+		questions := typesafe.Questions{}
+		for _, name := range []string{"urgent", "skipped"} {
+			var question typesafe.Question
+			if name == "urgent" {
+				question = typesafe.NoulQuestion{}
+			}
+			questions[name] = question
+		}
+
+		_, err := client.SystemOne(t.Context(), typesafe.Request{State: "ticket", Questions: questions})
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `question "skipped" is nil`)
+	})
+
 	t.Run("names the question the api would reject", func(t *testing.T) {
 		t.Parallel()
 		client := newRawServer(t, func(http.ResponseWriter, *http.Request) {})

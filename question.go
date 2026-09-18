@@ -158,7 +158,13 @@ func (q Questions) validate() error {
 		return ErrNoQuestions
 	}
 	for _, name := range sortedKeys(q) {
-		if err := q[name].validate(); err != nil {
+		// A question built in a loop can come out nil on a branch the
+		// caller did not mean to take. Report it rather than panic.
+		question := q[name]
+		if question == nil {
+			return fmt.Errorf("question %q is nil", name)
+		}
+		if err := question.validate(); err != nil {
 			return fmt.Errorf("question %q: %w", name, err)
 		}
 	}
