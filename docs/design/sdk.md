@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This document proposes the Go client for the TypeSafe AI API and records why
-it has the shape it has. It is the reference for anyone extending the SDK, and
-the argument for the places where it does not look like the Python or
-JavaScript SDK.
+This document describes the Go client for the TypeSafe AI API and why it has
+the shape it has. It is the reference for anyone extending the SDK, and the
+reasoning behind the places where it does not look like the Python or
+JavaScript SDK. Update it in the same commit as the behavior it describes.
 
-The goal is parity of capability, not parity of form. A Go program should be
-able to do everything a Python or JavaScript program can do, using the idioms
+The SDK has parity of capability with those SDKs, not parity of form. A Go
+program does everything a Python or JavaScript program does, using the idioms
 a Go reader already knows: a context first, an explicit struct, two return
 values, `errors.Is`, and a type switch.
 
@@ -37,7 +37,7 @@ validation, 429 for a rate limit, and 529 for an overloaded service. The
 documentation asks clients to retry 429 and 529 with exponential backoff.
 
 There is no streaming, no pagination, and no webhook. The API surface is
-small, and the SDK should be too.
+small, and so is the SDK's.
 
 ## What the other SDKs do
 
@@ -191,8 +191,8 @@ func (e *APIError) Unwrap() error
 ```
 
 Python and JavaScript define a class per status and ask callers to catch the
-one they care about. Go has no exception hierarchy, and a package of nine
-error types would be worse than what it replaced.
+one they care about. Go has no exception hierarchy, and nine error types trade
+one problem for a worse one.
 
 One typed error carries the detail and unwraps to a sentinel naming the kind.
 A caller who only wants to know what happened writes
@@ -281,7 +281,7 @@ real request bodies with the SDK's own types and encodes real responses.
 | Decision | Python and JavaScript | Go | Reason |
 |---|---|---|---|
 | Environment | `TypeSafeClient()` reads `TYPESAFE_API_KEY` | `NewClient(typesafe.FromEnv())` | A library that reads ambient state is hard to test and hard to reason about. One option makes the dependency visible, and `FromEnvFunc` makes it injectable. |
-| Async | A second `AsyncTypeSafeClient` | One client | A goroutine is already the concurrency primitive. A second client would be the same code twice. |
+| Async | A second `AsyncTypeSafeClient` | One client | A goroutine is already the concurrency primitive, so a second client is the same code twice. |
 | Errors | A class per status | One typed error plus sentinels | `errors.Is` and `errors.As` cover both needs without nine types. |
 | Timeouts | A client timeout and a retry budget | The context, and `http.Client.Timeout` | Go programs already bound work with a context. |
 | Log level | `TYPESAFE_LOG_LEVEL` | `WithLogger(*slog.Logger)` | The program owns its logging. |
@@ -307,15 +307,18 @@ generator would not.
 and logging are all in the standard library. A dependency this SDK takes is a
 dependency every program that imports it takes.
 
-## Open questions
+## Decisions worth revisiting
+
+These three are settled, and each rests on an assumption that could change.
 
 - **Score criteria.** The OpenAPI schema requires at least one level and the
   prose documentation asks for at least two. The SDK enforces the schema, so
-  it never rejects a request the server accepts, and says so in the doc
-  comment for `ScoreQuestion.Criteria`.
-- **Release date typing.** `Model.ReleaseDate` is a string, as the API sends
-  it. Parsing it into a `time.Time` would fail the whole list for one
-  malformed date on an endpoint that is otherwise informational.
-- **Retrying a POST.** `SystemOne` is retried like the other SDKs retry it.
-  Evaluation has no side effect, so a repeated request costs tokens and
-  nothing else.
+  it never rejects a request the server accepts, and the doc comment for
+  `ScoreQuestion.Criteria` says so. If the server starts rejecting one level,
+  the SDK follows it.
+- **Release date typing.** `Model.ReleaseDate` is the string the API sends.
+  Parsing it into a `time.Time` fails the whole list for one malformed date,
+  on an endpoint that is otherwise informational.
+- **Retrying a POST.** `SystemOne` retries, as the other SDKs do. Evaluation
+  has no side effect, so a repeated request costs tokens and nothing else. A
+  future endpoint that does have a side effect needs its own answer.
