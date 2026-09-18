@@ -10,6 +10,9 @@ get a number your code can act on.
 go get github.com/jkakar/typesafe-sdk-go
 ```
 
+[Usage guide](docs/usage.md) · [Examples](examples) ·
+[Reference](https://pkg.go.dev/github.com/jkakar/typesafe-sdk-go)
+
 ## Quickstart
 
 Set `TYPESAFE_API_KEY` in your environment, then ask a question:
@@ -193,6 +196,19 @@ Without a handler it answers every question, so a test that only needs the
 call to succeed writes nothing. `srv.Recorded()` returns the requests it
 received, and `typesafetest.Failure` makes it return any status.
 
+## Documentation
+
+- [Usage guide](docs/usage.md) — the whole SDK, in the order you meet it:
+  state, the three question types, fan-out, confidence, errors, retries,
+  logging, and testing.
+- [Examples](examples) — runnable programs that call the real API.
+- [Reference](https://pkg.go.dev/github.com/jkakar/typesafe-sdk-go) — the
+  generated package documentation, including
+  [runnable examples](https://pkg.go.dev/github.com/jkakar/typesafe-sdk-go#pkg-examples)
+  that need no key.
+- [TypeSafe documentation](https://docs.typesafe.ai/) — what the model does
+  and how to write good questions.
+
 ## Getting started with development
 
 ```sh
@@ -209,6 +225,8 @@ its test assertion library.
 
 - [TypeSafe documentation](https://docs.typesafe.ai/)
 - [HTTP API reference](https://docs.typesafe.ai/api)
+- [Usage guide](docs/usage.md)
 - [Design and trade-offs](docs/design/sdk.md)
 - [Testing doctrine](docs/testing.md)
+- [Changelog](CHANGELOG.md)
 - [Agent guidelines](AGENTS.md)

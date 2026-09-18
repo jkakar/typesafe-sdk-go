@@ -10,6 +10,8 @@ this file before changing it.
 - [`docs/design/sdk.md`](docs/design/sdk.md) explains what the SDK exposes,
   why each shape was chosen, and where it diverges from the Python and
   JavaScript SDKs.
+- [`docs/usage.md`](docs/usage.md) is the user guide. It is the first thing a
+  caller reads after the README, so it changes with the public surface.
 - [`docs/testing.md`](docs/testing.md) is the canonical rule set for Go tests.
   Read it completely before writing or reviewing a test.
 - The API this SDK calls is documented at <https://docs.typesafe.ai/api>, and
@@ -162,12 +164,22 @@ with its own cache. Do not duplicate checks in workflow YAML.
 
 - `README.md` covers installation, the first call, and the shape of the API.
   Update it when the public surface changes.
+- `docs/usage.md` is the task-oriented guide to the whole SDK. Every Go
+  snippet in it type-checks against the real API, so keep them compilable
+  rather than illustrative.
+- `CHANGELOG.md` records what each release added, changed, or broke. Add the
+  entry in the commit that makes the change, under `## Unreleased`.
+- `examples/` holds runnable programs that call the real API. They are
+  documentation the compiler and the linter keep honest, so they are excluded
+  from the coverage metric and not from `go build`.
 - `docs/design/sdk.md` records the design and its trade-offs. Update it in the
   same commit as the behavior it describes.
 - `docs/testing.md` is the testing doctrine. A new mechanical rule goes there
   and in `internal/testpolicy` together.
-- Package documentation lives in `doc.go`. Examples that a reader should be
-  able to run live in `example_test.go`, where they run as tests.
+- Package documentation lives in `doc.go`. Examples a reader can run live in
+  `example_test.go` and `typesafetest/example_test.go`, where they run as
+  tests against `typesafetest`. An example never reaches the network: a test
+  that needs a key, an account, or the real API does not belong in the suite.
 
 Do not create a roadmap, progress log, or status file. Open an issue for
 unfinished work.

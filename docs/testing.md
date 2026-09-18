@@ -278,10 +278,13 @@ New and materially changed reachable behavior is completely covered. Run
 `make cover`, which prints every function a test does not fully reach, and
 report any remaining statements with the reason they stay.
 
-Coverage is measured with `-coverpkg=./...`, so a package exercised through
-another package's test counts. Coverage must not fall without an explicit
-reason. Do not add impossible branches or brittle tests solely to improve the
-number.
+Coverage is measured across every package but `examples/`, so a package
+exercised through another package's test counts. The programs under
+`examples/` are documentation: the compiler and the linter keep them honest,
+and a test that ran them would prove nothing a reader cares about.
+
+Coverage must not fall without an explicit reason. Do not add impossible
+branches or brittle tests solely to improve the number.
 
 These statements are uncovered on purpose:
 
@@ -293,6 +296,20 @@ These statements are uncovered on purpose:
 | `importNames`'s unquote failure | The parser guarantees a quoted import path. |
 | `isTestingTB`'s non-identifier package | Go's grammar gives a type name at most one qualifier. |
 | `main` in `cmd/lint-tests` | Process wiring: argument defaulting and `os.Exit`. |
+
+## 18a. Keep the examples runnable
+
+`example_test.go` and `typesafetest/example_test.go` hold the examples
+pkg.go.dev renders. They run as tests, so an example that stops compiling or
+stops producing its stated output fails the suite.
+
+An example runs against `typesafetest` and never reaches the network. An
+example that builds a client with `typesafe.NewClient(typesafe.WithAPIKey(...))`
+and then calls it would send a request to the real API from the test suite;
+point it at a fake instead.
+
+Every Go snippet in `docs/usage.md` type-checks against the real API. When the
+public surface changes, check the guide too.
 
 ## 19. Add benchmarks only for measured questions
 

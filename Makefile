@@ -4,6 +4,11 @@
 GO ?= go
 COVERAGE_FILE ?= cover.out
 
+# The packages coverage is measured against. Programs under examples/ are
+# documentation: the compiler and the linter keep them honest, and a test that
+# ran them would prove nothing a reader cares about.
+COVER_PKGS = $(shell $(GO) list ./... | grep -v '/examples/' | paste -sd, -)
+
 .DEFAULT_GOAL := check
 
 .PHONY: help
@@ -53,7 +58,7 @@ lint: ## Run golangci-lint
 
 .PHONY: test
 test: ## Run the tests with the race detector, leak detection and coverage
-	$(GO) test -race -shuffle=on -coverpkg=./... -coverprofile=$(COVERAGE_FILE) ./...
+	$(GO) test -race -shuffle=on -coverpkg=$(COVER_PKGS) -coverprofile=$(COVERAGE_FILE) ./...
 	@$(GO) tool cover -func=$(COVERAGE_FILE) | tail -1
 
 .PHONY: cover
