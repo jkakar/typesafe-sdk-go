@@ -190,7 +190,14 @@ The root Makefile is the stable developer interface:
 | `make test` | Tests with the race detector, shuffling, leak detection, and coverage |
 | `make cover` | The statements no test reaches |
 
-Use Go 1.27 for every build and CI job. The module depends on
+Develop on Go 1.27, which `go.mod`'s `toolchain` line selects and CI pins.
+That is not the version callers need: the `go` directive says 1.24, which is
+the lowest the library compiles against, and lowering the bar for a caller is
+cheap while raising it is not. Only the tests need 1.27, for
+`testing/synctest` and the `goroutineleak` profile. Check the directive still
+matches what the library needs before raising it.
+
+The module depends on
 `github.com/alecthomas/assert/v2` and nothing else, and it stays that way: a
 dependency this SDK takes is a dependency every program that imports it takes.
 `golangci-lint` is a developer tool, installed separately, not a module

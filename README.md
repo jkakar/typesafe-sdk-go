@@ -10,6 +10,8 @@ get a number your code can act on.
 go get github.com/jkakar/typesafe-sdk-go
 ```
 
+Requires Go 1.24 or newer.
+
 [Usage guide](docs/usage.md) · [Examples](examples) ·
 [Reference](https://pkg.go.dev/github.com/jkakar/typesafe-sdk-go)
 
@@ -218,8 +220,10 @@ make cover   # the statements no test reaches
 ```
 
 Go 1.27 and [golangci-lint](https://golangci-lint.run) are the only tools you
-need. The module itself depends on nothing outside the standard library except
-its test assertion library.
+need. The tests need 1.27 for `testing/synctest` and the `goroutineleak`
+profile, which is why `go.mod` carries a `toolchain` line; the module itself
+only asks callers for Go 1.24. It depends on nothing outside the standard
+library except its test assertion library.
 
 ## References
 

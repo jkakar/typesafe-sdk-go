@@ -15,9 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pinned, not read from go.mod: the `go` directive there is the
+      # lowest version a caller needs, and the tests need a newer one for
+      # testing/synctest and the goroutineleak profile.
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: "1.27"
           cache: true
 
       - uses: golangci/golangci-lint-action@v7

@@ -12,6 +12,8 @@ existing caller keeps building against `v1` until it chooses to move.
 
 ## Unreleased
 
+## v0.1.0 — 2026-09-18
+
 ### Added
 
 - The first release of the Go client for the TypeSafe API.
