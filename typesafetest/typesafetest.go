@@ -235,11 +235,22 @@ func defaultSystemOne(_ context.Context, req typesafe.Request) (typesafe.Respons
 	}, nil
 }
 
-// defaultModels lists the aliases the API documents.
+// defaultModels lists the aliases the API documents. The release dates are
+// RFC 3339 timestamps because that is what the API returns, whatever its
+// published schema says; a fake that sent YYYY-MM-DD would let date handling
+// pass here and fail in production.
 func defaultModels(context.Context) ([]typesafe.Model, error) {
 	return []typesafe.Model{
-		{Name: "jev-latest", Description: "The most recent stable release.", ReleaseDate: "2026-09-15"},
-		{Name: "jev-preview", Description: "The most recent release.", ReleaseDate: "2026-09-15"},
+		{
+			Name:        "jev-latest",
+			Description: "The most recent stable release.",
+			ReleaseDate: "2026-09-10T18:38:01.391457+00:00",
+		},
+		{
+			Name:        "jev-preview",
+			Description: "The most recent release.",
+			ReleaseDate: "2026-09-10T18:39:06.057655+00:00",
+		},
 	}, nil
 }
 

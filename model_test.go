@@ -21,7 +21,7 @@ func TestClient_ListModels(t *testing.T) {
 		t.Cleanup(srv.Close)
 		srv.HandleModels(func(context.Context) ([]typesafe.Model, error) {
 			return []typesafe.Model{
-				{Name: "jev-latest", Description: "The most recent stable release.", ReleaseDate: "2026-09-15"},
+				{Name: "jev-latest", Description: "The most recent stable release.", ReleaseDate: "2026-09-10T18:38:01.391457+00:00"},
 			}, nil
 		})
 		client := srv.Client()
@@ -30,7 +30,7 @@ func TestClient_ListModels(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, []typesafe.Model{
-			{Name: "jev-latest", Description: "The most recent stable release.", ReleaseDate: "2026-09-15"},
+			{Name: "jev-latest", Description: "The most recent stable release.", ReleaseDate: "2026-09-10T18:38:01.391457+00:00"},
 		}, models)
 		assert.Equal(t, "/v1/models", srv.Recorded()[0].Path)
 		assert.Equal(t, http.MethodGet, srv.Recorded()[0].Method)

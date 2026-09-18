@@ -13,7 +13,10 @@ type Model struct {
 	Name string `json:"name"`
 	// Description says what the model does.
 	Description string `json:"description"`
-	// ReleaseDate is the model's release date, formatted as YYYY-MM-DD.
+	// ReleaseDate is the model's release date, as the API sends it. Treat
+	// the format as unspecified: the published schema documents
+	// YYYY-MM-DD and the API returns an RFC 3339 timestamp, so parse it
+	// defensively or display it as the text it is.
 	ReleaseDate string `json:"release_date"`
 }
 

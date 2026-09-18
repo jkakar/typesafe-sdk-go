@@ -537,8 +537,10 @@ and move on your own schedule:
 client, err := typesafe.NewClient(typesafe.FromEnv(), typesafe.WithModel("jev-1.13.0"))
 ```
 
-`Model.ReleaseDate` is the string the API sends, formatted as `YYYY-MM-DD`.
-Parse it if you need to compare dates.
+`Model.ReleaseDate` is the string the API sends. Treat its format as
+unspecified: the published schema documents `YYYY-MM-DD`, and the API returns
+an RFC 3339 timestamp such as `2026-09-10T18:38:01.391457+00:00`. Display it
+as text, or parse it defensively and carry on when it does not parse.
 
 ## When the API adds something
 

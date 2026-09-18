@@ -317,8 +317,11 @@ These three are settled, and each rests on an assumption that could change.
   `ScoreQuestion.Criteria` says so. If the server starts rejecting one level,
   the SDK follows it.
 - **Release date typing.** `Model.ReleaseDate` is the string the API sends.
-  Parsing it into a `time.Time` fails the whole list for one malformed date,
-  on an endpoint that is otherwise informational.
+  Parsing it into a `time.Time` needs a layout, and the format is not settled:
+  the published schema documents `YYYY-MM-DD` while the API returns an RFC
+  3339 timestamp. A layout picked from the schema would fail every call. A
+  string also cannot fail the whole list for one malformed date, on an
+  endpoint that is otherwise informational.
 - **Retrying a POST.** `SystemOne` retries, as the other SDKs do. Evaluation
   has no side effect, so a repeated request costs tokens and nothing else. A
   future endpoint that does have a side effect needs its own answer.

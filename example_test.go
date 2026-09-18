@@ -337,6 +337,26 @@ func ExampleRawQuestion() {
 	// Output: rank {"type":"rank","order":["b","a"]}
 }
 
+// List the models the account can name in a request. ReleaseDate is the
+// string the API sends, whose format is not settled, so print it rather than
+// parse it.
+func ExampleClient_ListModels() {
+	srv := typesafetest.NewServer()
+	defer srv.Close()
+
+	models, err := srv.Client().ListModels(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, model := range models {
+		fmt.Printf("%s released %s\n", model.Name, model.ReleaseDate)
+	}
+	// Output:
+	// jev-latest released 2026-09-10T18:38:01.391457+00:00
+	// jev-preview released 2026-09-10T18:39:06.057655+00:00
+}
+
 // Match the kind of failure with errors.Is and read its detail with errors.As.
 func ExampleAPIError() {
 	srv := typesafetest.NewServer()
