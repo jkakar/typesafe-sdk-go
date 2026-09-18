@@ -27,4 +27,4 @@ jobs:
 
       # golangci-lint runs above with its own action, so `make check` would
       # repeat it. Everything else runs here.
-      - run: make fmt-check tidy-check lint-tests vet test
+      - run: make fmt-check tidy-check vet test

@@ -34,9 +34,7 @@ systemone.go     POST /v1/systemone
 model.go         GET /v1/models
 json.go          The tagged-union encoding both endpoints share
 typesafetest/    A fake TypeSafe API for tests, this SDK's and yours
-cmd/lint-tests/  The mechanical guard for docs/testing.md
 internal/leak/   Goroutine leak detection for TestMain
-internal/testpolicy/  The checks lint-tests runs
 ```
 
 Add a file when a new domain arrives, not a new layer. An SDK with two
@@ -132,8 +130,9 @@ completely before writing or reviewing a test.
 
 Follow red-green-refactor: write the test first, observe the assertion
 failure, then write the minimum code to pass. Run `make check` before opening
-a pull request and `make cover` to see what no test reaches. Mechanical guards
-live in `cmd/lint-tests`.
+a pull request and `make cover` to see what no test reaches. The rules in
+`docs/testing.md` are enforced by review, so read them before reviewing a
+test.
 
 `typesafetest` is part of the product, not scaffolding. A program that calls
 this SDK tests itself against `typesafetest.NewServer`, so changes there are
@@ -145,11 +144,10 @@ The root Makefile is the stable developer interface:
 
 | Target | What it does |
 |---|---|
-| `make check` | Everything CI runs: formatting, tidiness, test policy, vet, lint, tests |
+| `make check` | Everything CI runs: formatting, tidiness, vet, lint, tests |
 | `make fix` | Format the source and tidy the module |
 | `make test` | Tests with the race detector, shuffling, leak detection, and coverage |
 | `make cover` | The statements no test reaches |
-| `make lint-tests` | The mechanical rules in `docs/testing.md` |
 
 Use Go 1.27 for every build and CI job. The module depends on
 `github.com/alecthomas/assert/v2` and nothing else, and it stays that way: a
@@ -174,8 +172,8 @@ with its own cache. Do not duplicate checks in workflow YAML.
   from the coverage metric and not from `go build`.
 - `docs/design/sdk.md` records the design and its trade-offs. Update it in the
   same commit as the behavior it describes.
-- `docs/testing.md` is the testing doctrine. A new mechanical rule goes there
-  and in `internal/testpolicy` together.
+- `docs/testing.md` is the testing doctrine. A new rule goes there, with the
+  reason it earns its place.
 - Package documentation lives in `doc.go`. Examples a reader can run live in
   `example_test.go` and `typesafetest/example_test.go`, where they run as
   tests against `typesafetest`. An example never reaches the network: a test

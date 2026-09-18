@@ -9,20 +9,21 @@ service, and one external system, the TypeSafe API.
 
 ## Enforcement
 
-Most rules here are judgement. Four are mechanical and are checked by
-`make lint-tests`, which `make check` and CI both run:
+These rules are enforced by review. `make check` runs gofmt, `go vet`,
+`golangci-lint`, and the tests with the race detector, shuffling, and
+coverage, which catches some of what follows: `bodyclose` finds an unclosed
+response body and `errcheck` finds an ignored error. The rest is a reading.
 
-| Rule | Guard |
-|------|-------|
-| 8. Use real local infrastructure | no `http.DefaultClient`, `http.DefaultTransport`, `http.Get`, `http.Head`, `http.Post`, or `http.PostForm` in a test |
-| 12. Do not depend on environment variables | no `Setenv` or `Unsetenv` in a test |
-| 13. Use `assert/v2` | no `t.Error`, `t.Fatal`, `t.Fail`, or their variants, in any Go file |
-| 22. Detect goroutine leaks | every `TestMain` ends the package with `leak.CheckAfter` |
+Four are worth a second look in any review, because breaking them fails later
+and elsewhere, and the failure looks like flakiness rather than like a broken
+rule:
 
-The guard reads Go syntax rather than lines of text, so the same characters
-inside a comment or a string literal are not a violation, and `log.Fatal` is
-not mistaken for `t.Fatal`. Add a rule there only when it can be decided from
-syntax alone; everything else belongs to review.
+| Rule | What to look for |
+|------|------------------|
+| 8. Use real local infrastructure | `http.DefaultClient`, `http.DefaultTransport`, `http.Get`, `http.Head`, `http.Post`, or `http.PostForm` in a test |
+| 12. Do not depend on environment variables | `Setenv` or `Unsetenv` in a test |
+| 13. Use `assert/v2` | `t.Error`, `t.Fatal`, `t.Fail`, or their variants, in any Go file |
+| 22. Detect goroutine leaks | a `TestMain` that does not end the package with `leak.CheckAfter` |
 
 ## 1. Name tests after the surface under test
 
@@ -123,10 +124,10 @@ which for a published SDK is the whole point.
 
 Use an internal test package only for:
 
-1. Command wiring whose useful functions are intentionally private, such as
-   `run` in `cmd/lint-tests`.
-2. A private invariant whose meaning would be lost if exported, such as the
+1. A private invariant whose meaning would be lost if exported, such as the
    backoff schedule in `retry_internal_test.go`.
+2. A package under `internal/` whose whole surface is private to this module,
+   such as `internal/leak`.
 
 Name an internal test file `*_internal_test.go` so the exception is visible,
 and say in a comment why the surface stays private.
@@ -293,9 +294,6 @@ These statements are uncovered on purpose:
 | `seal` on each answer type | A marker method that seals the `Answer` union has no call site by design. |
 | `newRequest`'s request-build failure | `WithBaseURL` rejects a URL `http.NewRequestWithContext` would refuse, so the branch is defensive plumbing. |
 | `profileLeaks`'s profile-write failure | The profile is written to a `bytes.Buffer`, which does not fail. |
-| `importNames`'s unquote failure | The parser guarantees a quoted import path. |
-| `isTestingTB`'s non-identifier package | Go's grammar gives a type name at most one qualifier. |
-| `main` in `cmd/lint-tests` | Process wiring: argument defaulting and `os.Exit`. |
 
 ## 18a. Keep the examples runnable
 

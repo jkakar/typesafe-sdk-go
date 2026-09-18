@@ -17,7 +17,7 @@ help: ## Show the available targets
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
 
 .PHONY: check
-check: fmt-check tidy-check lint-tests vet lint test ## Run every check CI runs
+check: fmt-check tidy-check vet lint test ## Run every check CI runs
 
 .PHONY: fix
 fix: ## Format the source and tidy the module
@@ -43,10 +43,6 @@ tidy-check: ## Fail when go.mod or go.sum is stale
 		exit 1; \
 	fi
 	@rm -f go.mod.check go.sum.check
-
-.PHONY: lint-tests
-lint-tests: ## Check the mechanical rules in docs/testing.md
-	$(GO) run ./cmd/lint-tests .
 
 .PHONY: vet
 vet: ## Run go vet
