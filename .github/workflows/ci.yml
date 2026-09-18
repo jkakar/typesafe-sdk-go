@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          version: v2.13.2
+          args: --timeout=5m
+
+      # golangci-lint runs above with its own action, so `make check` would
+      # repeat it. Everything else runs here.
+      - run: make fmt-check tidy-check lint-tests vet test
